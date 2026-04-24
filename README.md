@@ -1,73 +1,85 @@
-# React + TypeScript + Vite
+# CLOWNPRO - Sistema de Gestión para Compañía de Payasos y Eventos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SaaS multi-tenant moderno para gestión de eventos infantiles, payasos, animadores y servicios de entretenimiento.
 
-Currently, two official plugins are available:
+## Stack Tecnológico
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React + TypeScript + Vite + Tailwind CSS + shadcn/ui
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Estado**: Zustand + TanStack Query
+- **Formularios**: React Hook Form + Zod
+- **Gráficos**: Recharts
+- **Notificaciones**: Sonner
 
-## React Compiler
+## Módulos Implementados
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Auth & Onboarding** - Login/Register con Supabase Auth, wizard de configuración inicial del negocio
+2. **Dashboard** - KPIs, eventos de hoy, próximos eventos, transacciones recientes
+3. **Gestión de Eventos** - CRUD completo con estados (Cotización → Confirmado → En progreso → Completado → Cancelado), fotos, checklist
+4. **Catálogo de Servicios** - Servicios con precios y paquetes con descuento
+5. **Directorio de Clientes** - CRUD con tags, historial y búsqueda
+6. **Empleados/Payasos** - Perfiles artísticos, especialidades, disponibilidad, rating
+7. **Finanzas** - Ingresos/gastos, gráficos de tendencias, balance
+8. **Inventario** - Props, disfraces, maquillaje, alertas de stock bajo
+9. **Cotizador Público** - Landing page con formulario de cotización para clientes potenciales
+10. **Configuración** - Datos fiscales, branding, colores, notificaciones
 
-## Expanding the ESLint configuration
+## Instalación
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Clonar repositorio
+git clone https://github.com/tuusuario/clownpro.git
+cd clownpro
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Instalar dependencias
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Configurar variables de entorno (copiar .env.example a .env.local)
+cp .env.example .env.local
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Editar .env.local con tus credenciales de Supabase
+
+# Iniciar servidor de desarrollo
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Configuración de Supabase
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Crear proyecto en [Supabase](https://supabase.com)
+2. Ejecutar el schema SQL en el SQL Editor (ver `supabase/schema.sql`)
+3. Configurar Storage buckets: `event-photos`, `tenant-logos`
+4. Configurar Auth providers (Email/Password)
+5. Copiar URL y Anon Key al `.env.local`
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Variables de Entorno
+
+```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_ANON_KEY=tu-anon-key
 ```
+
+## Scripts
+
+- `npm run dev` - Servidor de desarrollo
+- `npm run build` - Build de producción
+- `npm run preview` - Previsualizar build
+
+## Arquitectura Multi-Tenant
+
+- Tenant por `subdomain` o `tenant_id` en tablas
+- Row Level Security (RLS) en todas las tablas
+- Roles: super_admin, admin, employee, client
+- Cada negocio tiene su propia configuración, colores y branding
+
+## Características Adicionales
+
+- Dark mode / Light mode
+- Responsive (mobile-first)
+- Notificaciones toast (Sonner)
+- Gráficos de finanzas (Recharts)
+- Subida de fotos de eventos
+- Cotizador público con cálculo automático
+
+## Licencia
+
+MIT
