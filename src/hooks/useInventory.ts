@@ -1,16 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import { demoInventory } from '@/lib/demoData'
 import { toast } from 'sonner'
 
 export function useInventory() {
-  const { tenant } = useAuth()
+  const { tenant, isDemoMode } = useAuth()
   const queryClient = useQueryClient()
   const tenantId = tenant?.id
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['inventory', tenantId],
     queryFn: async () => {
+      if (isDemoMode) return demoInventory
       if (!tenantId) return []
       const { data, error } = await supabase
         .from('inventories')
@@ -20,7 +22,7 @@ export function useInventory() {
       if (error) throw error
       return data || []
     },
-    enabled: !!tenantId,
+    enabled: !!tenantId || isDemoMode,
   })
 
   const createItem = useMutation({

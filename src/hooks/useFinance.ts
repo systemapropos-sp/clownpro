@@ -1,16 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import { demoTransactions } from '@/lib/demoData'
 import { toast } from 'sonner'
 
 export function useFinance() {
-  const { tenant } = useAuth()
+  const { tenant, isDemoMode } = useAuth()
   const queryClient = useQueryClient()
   const tenantId = tenant?.id
 
   const { data: transactions, isLoading } = useQuery({
     queryKey: ['transactions', tenantId],
     queryFn: async () => {
+      if (isDemoMode) return demoTransactions
       if (!tenantId) return []
       const { data, error } = await supabase
         .from('transactions')
@@ -20,7 +22,7 @@ export function useFinance() {
       if (error) throw error
       return data || []
     },
-    enabled: !!tenantId,
+    enabled: !!tenantId || isDemoMode,
   })
 
   const createTransaction = useMutation({

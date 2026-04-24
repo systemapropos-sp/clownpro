@@ -89,6 +89,7 @@ export function useAuth() {
     tenant: store.tenant,
     isLoading,
     isAuthenticated: store.isAuthenticated,
+    isDemoMode: store.isDemoMode,
     theme: store.theme,
     language: store.language,
     setTheme: store.setTheme,
@@ -97,5 +98,6 @@ export function useAuth() {
     signUp: signUp.mutateAsync,
     signOut: signOut.mutateAsync,
     createTenant: createTenant.mutateAsync,
+    enableDemoMode: store.enableDemoMode,
   }
 }

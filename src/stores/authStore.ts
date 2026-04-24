@@ -13,6 +13,7 @@ interface AuthState {
   isAuthenticated: boolean
   theme: 'light' | 'dark'
   language: 'es' | 'en'
+  isDemoMode: boolean
   
   setUser: (user: User | null) => void
   setTenant: (tenant: Tenant | null) => void
@@ -22,6 +23,36 @@ interface AuthState {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   loadSession: () => Promise<void>
+  enableDemoMode: () => void
+}
+
+const demoTenant: Tenant = {
+  id: 'demo-tenant',
+  name: 'Payasos Felices RD',
+  subdomain: 'payasosfelices',
+  logo_url: null,
+  primary_color: '#7C3AED',
+  secondary_color: '#F97316',
+  currency: 'DOP',
+  tax_rate: 0.18,
+  tax_id: '123456789',
+  legal_name: 'Payasos Felices SRL',
+  address: 'Santo Domingo, República Dominicana',
+  phone: '+1 (809) 555-0123',
+  email: 'info@payasosfelices.com',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}
+
+const demoUser: User = {
+  id: 'demo-user',
+  email: 'admin@clownpro.com',
+  full_name: 'Administrador Demo',
+  avatar_url: null,
+  role: 'admin',
+  tenant_id: 'demo-tenant',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -33,6 +64,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       theme: 'light',
       language: 'es',
+      isDemoMode: false,
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setTenant: (tenant) => set({ tenant }),
@@ -84,7 +116,7 @@ export const useAuthStore = create<AuthState>()(
 
       signOut: async () => {
         await supabase.auth.signOut()
-        set({ user: null, tenant: null, isAuthenticated: false })
+        set({ user: null, tenant: null, isAuthenticated: false, isDemoMode: false })
       },
 
       loadSession: async () => {
@@ -107,6 +139,16 @@ export const useAuthStore = create<AuthState>()(
           }
         }
         set({ isLoading: false })
+      },
+
+      enableDemoMode: () => {
+        set({
+          user: demoUser,
+          tenant: demoTenant,
+          isAuthenticated: true,
+          isDemoMode: true,
+          isLoading: false,
+        })
       },
     }),
     {

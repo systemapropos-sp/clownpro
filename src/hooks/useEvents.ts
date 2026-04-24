@@ -1,16 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import { demoEvents } from '@/lib/demoData'
 import { toast } from 'sonner'
 
 export function useEvents() {
-  const { tenant } = useAuth()
+  const { tenant, isDemoMode } = useAuth()
   const queryClient = useQueryClient()
   const tenantId = tenant?.id
 
   const { data: events, isLoading } = useQuery({
     queryKey: ['events', tenantId],
     queryFn: async () => {
+      if (isDemoMode) return demoEvents
       if (!tenantId) return []
       const { data, error } = await supabase
         .from('events')
@@ -20,7 +22,7 @@ export function useEvents() {
       if (error) throw error
       return data || []
     },
-    enabled: !!tenantId,
+    enabled: !!tenantId || isDemoMode,
   })
 
   const createEvent = useMutation({

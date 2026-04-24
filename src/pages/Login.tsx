@@ -5,16 +5,21 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkles, Loader2 } from 'lucide-react'
+import { Sparkles, Loader2, Play } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { signIn, isLoading } = useAuth()
+  const { signIn, enableDemoMode, isLoading } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await signIn({ email, password })
+  }
+
+  const handleDemoMode = () => {
+    enableDemoMode()
+    window.location.replace('/#/dashboard')
   }
 
   return (
@@ -71,6 +76,26 @@ export default function Login() {
               )}
             </Button>
           </form>
+
+          {/* Demo Mode Button */}
+          <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+            <p className="text-sm text-zinc-500 text-center mb-3">
+              ¿Quieres probar sin registrarte?
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 border-2 border-violet-200 dark:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:border-violet-300 text-violet-700 dark:text-violet-300 font-semibold"
+              onClick={handleDemoMode}
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Entrar en Modo Demo (Dueño)
+            </Button>
+            <p className="text-xs text-zinc-400 text-center mt-2">
+              Datos de ejemplo pre-cargados para explorar el sistema
+            </p>
+          </div>
+
           <p className="text-center text-sm text-zinc-500 mt-6">
             ¿No tienes cuenta?{' '}
             <Link to="/register" className="text-violet-600 hover:text-violet-700 font-medium">

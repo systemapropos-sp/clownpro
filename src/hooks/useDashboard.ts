@@ -1,14 +1,37 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import { demoEvents, demoEmployees, demoTransactions } from '@/lib/demoData'
 
 export function useDashboard() {
-  const { tenant } = useAuth()
+  const { tenant, isDemoMode } = useAuth()
   const tenantId = tenant?.id
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboard-stats', tenantId],
     queryFn: async () => {
+      if (isDemoMode) {
+        const today = new Date().toISOString().split('T')[0]
+        const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+        
+        const upcomingEvents = demoEvents.filter(e => e.event_date >= today && ['confirmed', 'in_progress'].includes(e.status))
+        const todayEvents = demoEvents.filter(e => e.event_date === today)
+        const pendingQuotes = demoEvents.filter(e => e.status === 'quote')
+        const monthlyIncome = demoTransactions
+          .filter(t => t.type === 'income' && t.transaction_date >= monthStart.split('T')[0])
+          .reduce((sum, t) => sum + t.amount, 0)
+        
+        return {
+          upcomingEvents: upcomingEvents.length,
+          monthlyIncome,
+          availableEmployees: demoEmployees.length,
+          pendingQuotes: pendingQuotes.length,
+          todayEvents,
+          weeklyEvents: demoEvents.filter(e => e.event_date >= today).slice(0, 5),
+          recentTransactions: demoTransactions.slice(0, 5),
+        }
+      }
+      
       if (!tenantId) return {
         upcomingEvents: 0,
         monthlyIncome: 0,
@@ -82,7 +105,7 @@ export function useDashboard() {
         recentTransactions: recentTransactions || [],
       }
     },
-    enabled: !!tenantId,
+    enabled: !!tenantId || isDemoMode,
     refetchInterval: 30000,
   })
 

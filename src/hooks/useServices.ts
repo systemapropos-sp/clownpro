@@ -1,16 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import { demoServices, demoPackages } from '@/lib/demoData'
 import { toast } from 'sonner'
 
 export function useServices() {
-  const { tenant } = useAuth()
+  const { tenant, isDemoMode } = useAuth()
   const queryClient = useQueryClient()
   const tenantId = tenant?.id
 
   const { data: services, isLoading } = useQuery({
     queryKey: ['services', tenantId],
     queryFn: async () => {
+      if (isDemoMode) return demoServices
       if (!tenantId) return []
       const { data, error } = await supabase
         .from('services')
@@ -21,12 +23,13 @@ export function useServices() {
       if (error) throw error
       return data || []
     },
-    enabled: !!tenantId,
+    enabled: !!tenantId || isDemoMode,
   })
 
   const { data: packages, isLoading: packagesLoading } = useQuery({
     queryKey: ['packages', tenantId],
     queryFn: async () => {
+      if (isDemoMode) return demoPackages
       if (!tenantId) return []
       const { data, error } = await supabase
         .from('packages')
@@ -37,7 +40,7 @@ export function useServices() {
       if (error) throw error
       return data || []
     },
-    enabled: !!tenantId,
+    enabled: !!tenantId || isDemoMode,
   })
 
   const createService = useMutation({
